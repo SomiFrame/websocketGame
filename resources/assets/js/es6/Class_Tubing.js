@@ -3,18 +3,18 @@ class Class_Tubing {
         this.canvas = canvas;//画布
         this.speedX = 0;//物体在X轴上的移动速度
         this.speedY = 0;//物体在Y轴上的移动速度
-        this.width = width;
-        this.gravity = gv;
-        this.color = color;
-        this.intervalHieght = intervalHeight;
+        this.width = width;//柱子宽度
+        this.gravity = gv;//重力系数
+        this.color = color;//颜色
+        this.intervalHieght = intervalHeight;//上下柱子间隔
         let theight = (canvas.height - intervalHeight) * Math.random();
         let bheight = canvas.height - theight - intervalHeight;
-        this.topPositionX = x;//X轴上的位置
-        this.topPositionY = 0;//Y轴上的位置
-        this.bottomPositionX = x;
+        this.topPositionX = x;//顶部X轴上的位置
+        this.topPositionY = 0;//顶部Y轴上的位置
+        this.bottomPositionX = x;//底部柱子X轴上的位置
         this.bottomPositionY = theight + intervalHeight;
-        this.topheight = theight;
-        this.bottomheight = bheight;
+        this.topheight = theight;//顶部柱子高度
+        this.bottomheight = bheight;//底部柱子高度
     }
 
     setMoveSpeed(speedX, speedY) {

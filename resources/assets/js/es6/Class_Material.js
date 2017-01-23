@@ -1,10 +1,10 @@
 class Class_Material {
-    constructor(canvas, x = 20, y = 20, r = 10, gv = .4, color = '#000000') {
+    constructor(canvas, x = 20, y = 20, r = 10, sx = 1, sy = 1, gv = .4, color = '#000000') {
         this.canvas = canvas;//画布
         this.positionX = x + r;//X轴上的位置
         this.positionY = y + r;//Y轴上的位置
-        this.speedX = 0;//物体在X轴上的移动速度
-        this.speedY = 0;//物体在Y轴上的移动速度
+        this.speedX = sx;//物体在X轴上的移动速度
+        this.speedY = sy;//物体在Y轴上的移动速度
         this.redius = r;//物体的半径（大小）
         this.startAngle = 0;//
         this.endAngle = 2 * Math.PI;

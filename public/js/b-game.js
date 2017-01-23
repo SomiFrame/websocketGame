@@ -60,22 +60,20 @@
 	var LoopID = void 0;
 	var gameCanvas = document.getElementById('gameArea');
 	var gameCtx = gameCanvas.getContext('2d');
-	var ball = new _Class_Material2.default(gameCanvas);
-	ball.setMoveSpeed(0, -10);
-	ball.positionY = 0;
-	ball.positionX = gameCanvas.width / 2;
-	var arrayTubs = [];
-	for (var i = 0; i < 4; i++) {
-	    arrayTubs.push(new _Class_Tubing2.default(gameCanvas, gameCanvas.width + i * gameCanvas.width / 4, 0, 40, 100, 0));
-	}
-	// let Tub = new Tubing(gameCanvas, gameCanvas.width, 0, 40, 50, 0);
-	arrayTubs.forEach(function (e) {
-	    e.setMoveSpeed(-1, 0);
-	});
+	// let ball = new Material(gameCanvas, gameCanvas.width / 2, 0, 10, 0, -10, .4);
+	// let arrayTubs = [];
+	// for (let i = 0; i < 4; i++) {
+	//     arrayTubs.push(new Tubing(gameCanvas, gameCanvas.width + i * gameCanvas.width / 4, 0, 40, 100, 0));
+	// }
+	// // let Tub = new Tubing(gameCanvas, gameCanvas.width, 0, 40, 50, 0);
+	// arrayTubs.forEach((e)=> {
+	//     e.setMoveSpeed(-1, 0);
+	// });
 
-	window.addEventListener('keydown', function (e) {
-	    ball.speedY = -5;
-	}, false);
+	// window.addEventListener('keydown', function (e) {
+	//     ball.speedY = -5;
+	// }, false);
+
 
 	var requestAnimFrame = function requestAnimFrame(callback) {
 	    return window.setTimeout(callback, 1000 / 60);
@@ -84,25 +82,38 @@
 	    return window.clearTimeout(ID);
 	};
 	function loop() {
-	    LoopID = requestAnimFrame(loop);
-	    arrayTubs.forEach(function (e) {
-	        if (e.topPositionX <= ball.positionX + ball.redius && ball.positionX <= e.topPositionX + e.width && ball.positionY - ball.redius <= e.topheight || e.topPositionX <= ball.positionX + ball.redius && ball.positionX <= e.topPositionX + e.width && ball.positionY + ball.redius >= e.topheight + e.intervalHieght) {
-	            cancelAnimFrame(LoopID);
-	        }
-	    });
-	    ball.clearAll(gameCtx);
-	    ball.move(gameCtx);
-	    arrayTubs.forEach(function (e) {
-	        e.move(gameCtx);
-	    });
+	    // LoopID = requestAnimFrame(loop);
+	    // ball.clearAll(gameCtx);
+	    // ball.move(gameCtx);
+	    // arrayTubs.forEach((e)=> {
+	    //     e.move(gameCtx);
+	    // });
+	    //
+	    // arrayTubs.forEach((e)=> {
+	    //     if ((e.topPositionX <= ball.positionX + ball.redius
+	    //         && ball.positionX <= e.topPositionX + e.width
+	    //         && ball.positionY - ball.redius <= e.topheight)
+	    //         ||
+	    //         (e.topPositionX <= ball.positionX + ball.redius
+	    //         && ball.positionX <= e.topPositionX + e.width
+	    //         && ball.positionY + ball.redius >= e.topheight + e.intervalHieght)) {
+	    //         cancelAnimFrame(LoopID);
+	    //     }
+	    // });
 	}
-	console.log(io);
 	var socket = io();
-	socket.emit('chat message', 'somi');
-	socket.on('message', function (e) {
-	    console.log(e);
+	socket.on('init', function (e) {
+	    gameCanvas.width = e.width;
+	    gameCanvas.height = e.height;
 	});
-	loop();
+	socket.on('ball change', function (e) {
+	    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+	    gameCtx.beginPath();
+	    gameCtx.arc(gameCanvas.width / 2, e.y, e.r, 0, Math.PI * 2, e.color);
+	    gameCtx.closePath();
+	    gameCtx.fill();
+	});
+	// loop();
 
 /***/ },
 /* 1 */
@@ -123,16 +134,18 @@
 	        var x = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 20;
 	        var y = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 20;
 	        var r = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 10;
-	        var gv = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : .4;
-	        var color = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : '#000000';
+	        var sx = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : 1;
+	        var sy = arguments.length > 5 && arguments[5] !== undefined ? arguments[5] : 1;
+	        var gv = arguments.length > 6 && arguments[6] !== undefined ? arguments[6] : .4;
+	        var color = arguments.length > 7 && arguments[7] !== undefined ? arguments[7] : '#000000';
 
 	        _classCallCheck(this, Class_Material);
 
 	        this.canvas = canvas; //画布
 	        this.positionX = x + r; //X轴上的位置
 	        this.positionY = y + r; //Y轴上的位置
-	        this.speedX = 0; //物体在X轴上的移动速度
-	        this.speedY = 0; //物体在Y轴上的移动速度
+	        this.speedX = sx; //物体在X轴上的移动速度
+	        this.speedY = sy; //物体在Y轴上的移动速度
 	        this.redius = r; //物体的半径（大小）
 	        this.startAngle = 0; //
 	        this.endAngle = 2 * Math.PI;
@@ -215,18 +228,18 @@
 	        this.canvas = canvas; //画布
 	        this.speedX = 0; //物体在X轴上的移动速度
 	        this.speedY = 0; //物体在Y轴上的移动速度
-	        this.width = width;
-	        this.gravity = gv;
-	        this.color = color;
-	        this.intervalHieght = intervalHeight;
+	        this.width = width; //柱子宽度
+	        this.gravity = gv; //重力系数
+	        this.color = color; //颜色
+	        this.intervalHieght = intervalHeight; //上下柱子间隔
 	        var theight = (canvas.height - intervalHeight) * Math.random();
 	        var bheight = canvas.height - theight - intervalHeight;
-	        this.topPositionX = x; //X轴上的位置
-	        this.topPositionY = 0; //Y轴上的位置
-	        this.bottomPositionX = x;
+	        this.topPositionX = x; //顶部X轴上的位置
+	        this.topPositionY = 0; //顶部Y轴上的位置
+	        this.bottomPositionX = x; //底部柱子X轴上的位置
 	        this.bottomPositionY = theight + intervalHeight;
-	        this.topheight = theight;
-	        this.bottomheight = bheight;
+	        this.topheight = theight; //顶部柱子高度
+	        this.bottomheight = bheight; //底部柱子高度
 	    }
 
 	    _createClass(Class_Tubing, [{
