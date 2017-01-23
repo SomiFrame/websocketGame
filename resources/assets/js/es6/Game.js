@@ -53,11 +53,15 @@ socket.on('init', function (e) {
     gameCanvas.height = e.height;
 });
 socket.on('ball change', function (e) {
+    console.log(e);
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    gameCtx.beginPath();
-    gameCtx.arc(gameCanvas.width / 2, e.y, e.r, 0, Math.PI * 2, e.color);
-    gameCtx.closePath();
-    gameCtx.fill();
+    for(var i=0;i<e.length;i++) {
+        gameCtx.beginPath();
+        gameCtx.arc(gameCanvas.width / 2, e[i].y, e[i].r, 0, Math.PI * 2, e[i].color);
+        gameCtx.closePath();
+        gameCtx.fill();
+    }
+
 });
 // loop();
 
