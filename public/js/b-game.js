@@ -69,12 +69,6 @@
 	// arrayTubs.forEach((e)=> {
 	//     e.setMoveSpeed(-1, 0);
 	// });
-
-	// window.addEventListener('keydown', function (e) {
-	//     ball.speedY = -5;
-	// }, false);
-
-
 	var requestAnimFrame = function requestAnimFrame(callback) {
 	    return window.setTimeout(callback, 1000 / 60);
 	};
@@ -106,16 +100,38 @@
 	    gameCanvas.width = e.width;
 	    gameCanvas.height = e.height;
 	});
-	socket.on('ball change', function (e) {
-	    console.log(e);
+	socket.on('change', function (e) {
+	    var ballPack = e['ballPack'];
+	    var tubingPack = e['tubingPack'];
 	    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-	    for (var i = 0; i < e.length; i++) {
+	    for (var b = 0; b < ballPack.length; b++) {
+	        var ball = ballPack[b];
 	        gameCtx.beginPath();
-	        gameCtx.arc(gameCanvas.width / 2, e[i].y, e[i].r, 0, Math.PI * 2, e[i].color);
+	        gameCtx.arc(gameCanvas.width / 2, ball.y, ball.r, 0, Math.PI * 2, ball.color);
+	        gameCtx.closePath();
+	        gameCtx.fill();
+	    }
+	    for (var t = 0; t < tubingPack.length; t++) {
+	        var tubing = tubingPack[t];
+	        gameCtx.beginPath();
+	        gameCtx.rect(tubing.topPositionX, tubing.topPositionY, tubing.width, tubing.topHeight);
+	        gameCtx.rect(tubing.bottomPositionX, tubing.bottomPositionY, tubing.width, tubing.bottomHeight);
 	        gameCtx.closePath();
 	        gameCtx.fill();
 	    }
 	});
+	// socket.on('tubing change', function (e) {
+	//     for(var i=0;i<e.length;i++) {
+	//         var tubing = e[i];
+	//         gameCtx.beginPath();
+	//         gameCtx.rect(tubing.topPositionX,tubing.topPositionY,tubing.width,tubing.topHeight);
+	//         gameCtx.closePath();
+	//     }
+	//     gameCtx.fill();
+	// });
+	window.addEventListener('keydown', function (e) {
+	    socket.emit('ball jump');
+	}, false);
 	// loop();
 
 /***/ },

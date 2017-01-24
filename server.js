@@ -19,12 +19,14 @@ var PlayerList = {};
 app.set('views', pathconfig.viewPath);
 app.set('view engine', 'jade');
 app.use(express.static(pathconfig.public));
+//画布
+var canvas = {
+    width: 1000,
+    height: 600
+};
 //玩家类
 var Player = function (id) {
-    var canvas = {
-        width: 1000,
-        height: 600
-    };
+
     var self = {
         id: id,
         canvas: canvas,
@@ -37,11 +39,38 @@ var Player = function (id) {
         ballOption: {
             sx: 0,
             sy: -10,
-            gv: .4
+            gv: .7
         }
     };
     return self;
 };
+//油管
+var Tubing = function (id) {
+    var id = id;
+    var intervalHeight = 100;
+    var intervalWidth = canvas.width / 4;
+    var tHeight = (canvas.height - intervalHeight) * Math.random();
+    var bHeight = canvas.height - tHeight - intervalHeight;
+    var self = {
+        initPositionX: canvas.width,
+        id: id,
+        sy: 0,
+        sx: -2,
+        width: 40,
+        color: '#000',
+        topPositionX: canvas.width + (intervalWidth * id),
+        topPositionY: 0,
+        bottomPositionX: canvas.width + (intervalWidth * id),
+        bottomPositionY: tHeight + intervalHeight,
+        topHeight: tHeight,
+        bottomHeight: bHeight
+    };
+    return self;
+};
+var TubingList = {};
+for (var i = 0; i < 4; i++) {
+    TubingList[i] = new Tubing(i);
+}
 io.on('connection', function (socket) {
     socket.id = uuid.v4();
     PlayerList[socket.id] = new Player(socket.id);
@@ -51,9 +80,11 @@ io.on('connection', function (socket) {
         delete PlayerList[socket.id];
         delete SocketList[socket.id];
     });
+    socket.on('ball jump', function () {
+        PlayerList[socket.id].ballOption.sy = -7;
+    });
 });
 app.get('/', function (req, res) {
-    console.log('index page');
     res.render('index');
 });
 Gamerouter.use((req, res, next)=> {
@@ -69,10 +100,12 @@ server.listen(hostPort, ()=> {
 });
 
 setInterval(function () {
-    var pack = [];
+    var Pack = {};
+    var ballPack = [];
+    var tubingPack = [];
     for (var j in PlayerList) {
         var player = PlayerList[j];
-        player.ballOption.sy += .4;
+        player.ballOption.sy += player.ballOption.gv;
         player.ball.x += player.ballOption.sx;
         player.ball.y += player.ballOption.sy;
         player.ball.r = 10;
@@ -83,11 +116,28 @@ setInterval(function () {
             player.ballOption.sx *= 0.7;
             player.ball.y = player.canvas.height - player.ball.r;
         }
-        pack.push(player.ball);
+        if (player.ball.y < player.ball.r) {
+            player.ballOption.sy *= -0.7;
+            player.ball.y = player.ball.r;
+        }
+        ballPack.push(player.ball);
     }
-    
+    for (var t in TubingList) {
+        var tubing = TubingList[t];
+        tubing.topPositionX += tubing.sx;
+        tubing.bottomPositionX += tubing.sx;
+        if (tubing.topPositionX < -tubing.width) {
+            tubing.topPositionX = tubing.initPositionX;
+            tubing.bottomPositionX = tubing.initPositionX;
+        }
+        tubingPack.push(tubing);
+    }
+    Pack = {
+        ballPack: ballPack,
+        tubingPack : tubingPack
+    }
     for (var i in SocketList) {
         var socket = SocketList[i];
-        socket.emit('ball change', pack);
+        socket.emit('change', Pack);
     }
 }, 1000 / 25);
