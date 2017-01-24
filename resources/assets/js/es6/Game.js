@@ -53,6 +53,7 @@ socket.on('change', function (e) {
     for(var b=0;b<ballPack.length;b++) {
         var ball = ballPack[b];
         gameCtx.beginPath();
+        gameCtx.fillStyle = ball.color;
         gameCtx.arc(gameCanvas.width / 2, ball.y, ball.r, 0, Math.PI * 2, ball.color);
         gameCtx.closePath();
         gameCtx.fill();
@@ -60,21 +61,16 @@ socket.on('change', function (e) {
     for(var t=0;t<tubingPack.length;t++) {
         var tubing = tubingPack[t];
         gameCtx.beginPath();
+        gameCtx.fillStyle = tubing.color;
         gameCtx.rect(tubing.topPositionX,tubing.topPositionY,tubing.width,tubing.topHeight);
         gameCtx.rect(tubing.bottomPositionX,tubing.bottomPositionY,tubing.width,tubing.bottomHeight);
         gameCtx.closePath();
         gameCtx.fill();
     }
 });
-// socket.on('tubing change', function (e) {
-//     for(var i=0;i<e.length;i++) {
-//         var tubing = e[i];
-//         gameCtx.beginPath();
-//         gameCtx.rect(tubing.topPositionX,tubing.topPositionY,tubing.width,tubing.topHeight);
-//         gameCtx.closePath();
-//     }
-//     gameCtx.fill();
-// });
+socket.on('explosion',function(e) {
+    console.log(e);
+})
 window.addEventListener('keydown', function (e) {
     socket.emit('ball jump');
 }, false);
