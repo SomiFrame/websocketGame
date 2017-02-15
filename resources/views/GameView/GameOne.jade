@@ -1,13 +1,10 @@
-<!doctype>
-<html>
-<head>
-
-</head>
-<body>
-canvas(
-id='gameArea'
-style={ margin: 'auto', display: 'block'}
-)
-</body>
-<script src="http://10.72.2.29:3031/js/b-game.js"></script>
-</html>
+<!DOCTYPE html>
+html
+    head
+    body
+        div.row
+            label(for='username' class='text-center center-block')='please enter one user name!'
+            input(id='username' name='username' class='text-center center-block')
+            button(id='login' type='submit' class='btn center-block')='login'
+        canvas(id='gameArea' style={ margin: 'auto', display: 'block',border: '1px solid #000',display: 'none'})
+    script(src="http://10.72.2.29:3031/js/b-game.js")
